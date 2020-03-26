@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <title>Hand Raising Demo</title>
+    <!-- this library, bundled and minimized -->
+    <script src="https://unpkg.com/@daily-co/daily-js"></script>
+    <!-- <script src="./create-demo-room.js"></script> -->
+    <!-- <script src="./show-participants.js"></script> -->
+  </head>
+  <body>
+    <div>
+      <h2>Call Participants List:</h2>
+      <ul id="participants-list">
+        None
+      </ul>
+    </div>
+
+    <p>
+      <button onclick="createFrame()">
+        Join the call!
+      </button>
+    </p>
+
+    <script>
+      function showEvent(e) {
+        console.log("video call event -->", e);
+      }
+
+      const updateParticipantList = e => {
+        showEvent(e);
+        const participantList = document.getElementById("participants-list");
+        const participants = callFrame.participants();
+        let listHtml = "";
+
+        for (let id in participants) {
+          let p = participants[id];
+          listHtml += `
+            <li>
+              <p>${p.user_name || "guest"} - ${"✋"}</p>
+            </li>
+          `;
+        }
+        participantList.innerHTML = listHtml;
+      };
+
+      async function createFrame() {
+        callFrame = window.DailyIframe.createFrame({});
+
+        // updateParticipantList();
+
+        callFrame
+          .on("participant-joined", updateParticipantList)
+          .on("participant-updated", updateParticipantList)
+          .on("participant-left", updateParticipantList)
+          .on("error", showEvent);
+        //   .on("hand-raised", showEvent)
+        //   .on("hand-lowered", showEvent)
+        //   .on("app-message", showEvent)
+
+        // join the room
+        callFrame.join({ url: "https://rose-demo.daily.co/hello" });
+      }
+    </script>
+  </body>
+</html>
