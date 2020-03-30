@@ -4,7 +4,7 @@ import * as UIFunctions from "./util/ui-functions.js";
 window.UIFunctions = UIFunctions;
 
 // if we are hosting we'll set our API key directly
-if (process.env.node_env === "development") {
-  import APIKEY from "./keys.js";
+if (process.env.NODE_ENV !== "production") {
+  const APIKEY = require("./keys.js");
   window.APIKEY = APIKEY;
 }
