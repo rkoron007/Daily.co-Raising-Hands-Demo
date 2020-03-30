@@ -70,3 +70,5 @@ async function createMtgLinkWithToken(properties) {
   let { token } = await handleResponseJSON(response);
   return `${room.url}?t=${token}`;
 }
+
+module.exports = { createMtgLinkWithToken, createMtgRoom, fetchRoom };

@@ -56,7 +56,30 @@ function joinCallTeacher() {
 }
 
 function joinCallStudent() {
+  console.log("hello");
   callFrame.join({ url: room.url, showLeaveButton: false });
   buttonDisable("join-meeting-student", "join-meeting-teacher");
   buttonEnable("raise-hand-btn", "leave-meeting");
 }
+
+// initially hide these buttons until we have a room setup
+function setupBtns() {
+  UIFunctions.buttonDisable(
+    "join-meeting-teacher",
+    "join-meeting-student",
+    "raise-hand-btn",
+    "leave-meeting",
+    "lower-hand-btn"
+  );
+}
+
+module.exports = {
+  showEvent,
+  joinCallStudent,
+  joinCallTeacher,
+  buttonDisable,
+  buttonEnable,
+  emptyParticipantList,
+  updateRoomUrlDisplay,
+  setupBtns
+};

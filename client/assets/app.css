@@ -1,0 +1,8 @@
+.disabled {
+  display: none;
+}
+
+#call-frame-container {
+  height: 500px;
+  width: 500px;
+}
