@@ -18,7 +18,8 @@
   "devDependencies": {},
   "scripts": {
     "dev": "webpack --mode=development",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "postinstall": "webpack"
   },
   "repository": {
     "type": "git",
