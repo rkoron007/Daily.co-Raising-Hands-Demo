@@ -5,8 +5,9 @@ window.UIFunctions = UIFunctions;
 
 // if we are hosting we'll set our API key directly
 if (process.env.NODE_ENV !== "production") {
-  const APIKEY = require("./keys.js");
-  window.APIKEY = APIKEY;
+  const SECRET_API_KEY = require("./keys.js");
+  window.SECRET_API_KEY = SECRET_API_KEY;
 } else {
-  console.log(process.env.APIKEY);
+  console.dir(process.env.SECRET_API_KEY);
+  window.SECRET_API_KEY = process.env.SECRET_API_KEY;
 }

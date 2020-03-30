@@ -10,7 +10,7 @@ async function makePostRequest(url, properties = {}) {
       "Content-Type": "application/json",
       "X-Requested-With": "XMLHttpRequest",
       // imported from a file not checked into version control
-      authorization: `Bearer ${APIKEY}`
+      authorization: `Bearer ${SECRET_API_KEY}`
     },
     credentials: "same-origin"
   });
@@ -23,7 +23,7 @@ async function makeFetchRequest(url) {
     headers: {
       "Content-Type": "application/json",
       // imported from a file not checked into version control
-      authorization: `Bearer ${APIKEY}`
+      authorization: `Bearer ${SECRET_API_KEY}`
     },
     credentials: "same-origin"
   });
