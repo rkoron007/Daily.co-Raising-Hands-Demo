@@ -1,4 +1,6 @@
-// function for creating a post request
+function showEvent(e) {
+  console.log("video call event -->", e);
+}
 
 function updateRoomInfoDisplay() {
   let roomEl = document.getElementById("meeting-room-info");
@@ -31,10 +33,7 @@ function updateRoomInfoDisplay() {
   }
 }
 
-function showEvent(e) {
-  console.log("video call event -->", e);
-}
-
+// ui button functions
 function buttonEnable(...args) {
   args.forEach(id => {
     let el = document.getElementById(id);
@@ -43,6 +42,7 @@ function buttonEnable(...args) {
     }
   });
 }
+
 function buttonDisable(...args) {
   args.forEach(id => {
     let el = document.getElementById(id);
@@ -50,4 +50,16 @@ function buttonDisable(...args) {
       el.classList.add("disabled");
     }
   });
+}
+
+function joinCallTeacher() {
+  callFrame.join({ url: ownerLink });
+  buttonDisable("join-meeting-student", "join-meeting-teacher");
+  buttonEnable("leave-meeting");
+}
+
+function joinCallStudent() {
+  callFrame.join({ url: room.url });
+  buttonDisable("join-meeting-student", "join-meeting-teacher");
+  buttonEnable("raise-hand-btn", "leave-meeting");
 }

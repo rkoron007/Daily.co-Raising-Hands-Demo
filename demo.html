@@ -1,41 +1,30 @@
 <html>
   <head>
-    <title>Hand Raising Demo</title>
+    <title>Classroom Hand Raising Demo</title>
     <!-- this library, bundled and minimized -->
     <script src="https://unpkg.com/@daily-co/daily-js"></script>
     <script src="./keys.js"></script>
-    <script src="./create-demo-room.js"></script>
-    <script src="./util.js"></script>
-    <style>
-      .disabled {
-        display: none;
-      }
-    </style>
+    <script src="./util/api-functions.js"></script>
+    <script src="./util/ui-functions.js"></script>
+    <link rel="stylesheet" type="text/css" href="app.css" />
   </head>
   <body onload="setupBtns()">
     <div class="participants">
-      <h2>Call Participants List:</h2>
+      <h2>Call Participants:</h2>
       <ul id="participants-list"></ul>
     </div>
 
     <div class="call-buttons">
       <button id="create-room-and-frame" onclick="createFrameAndRoom()">
-        Create a Meeting Room
+        Create/Join a Meeting Room
       </button>
-      <div id="meeting-room-info" class="info">
-        room info
-      </div>
-      <button
-        id="join-meeting-owner"
-        onclick="callFrame.join({ url: ownerLink });"
-      >
-        Join as Owner
+      <div id="meeting-room-info" class="info"></div>
+      <button id="join-meeting-teacher" onclick="joinCallTeacher()">
+        Join as Teacher (you can't raise your hand since you are the main
+        speaker!)
       </button>
-      <button
-        id="join-meeting-regular"
-        onclick="callFrame.join({ url: room.url });"
-      >
-        Join as regular participant
+      <button id="join-meeting-student" onclick="joinCallStudent()">
+        Join as a student (you can raise your hand)
       </button>
       <button id="leave-meeting" onclick="callFrame.leave()">
         Leave Meeting
@@ -43,15 +32,19 @@
       <button id="raise-hand-btn" onclick="raiseHand()">
         Raise Your Hand!
       </button>
+      <button id="lower-hand-btn" onclick="lowerHand()">
+        Lower Your Hand!
+      </button>
     </div>
 
     <script>
       function setupBtns() {
         buttonDisable(
-          "join-meeting-owner",
-          "join-meeting-regular",
+          "join-meeting-teacher",
+          "join-meeting-student",
           "raise-hand-btn",
-          "leave-meeting"
+          "leave-meeting",
+          "lower-hand-btn"
         );
       }
 
@@ -63,30 +56,30 @@
         let listHtml = "";
 
         for (let id in participants) {
-          let p = participants[id];
-          let handRaised = participants[video] ? "✋" : "";
+          let participant = participants[id];
+          let handRaised;
+          if (participant.owner) {
+            handRaised = "";
+          } else {
+            handRaised = participant.video ? "✋" : "";
+          }
           listHtml += `
-            <li>
-              <p>${p.user_name || "guest"}
-                <span id="${p.session_id}-hand">${handRaised}</span>
-              </p>
-            </li>
-          `;
+          <li>
+            <p>${participant.user_name || "guest"} ${handRaised}</p>
+           </li>`;
         }
         participantList.innerHTML = listHtml;
       }
 
       async function createFrame() {
-        window.callFrame = window.DailyIframe.createFrame({});
+        window.callFrame = window.DailyIframe.createFrame();
 
         callFrame
           .on("app-message", e => {
-            showEvent(e);
-            updateRaiseHandUI(e);
+            updateParticipantList;
           })
-          .on("join-meeting", e => {
-            // this is where I'll need to update my UI for hands
-            showEvent(e);
+          .on("leave-meeting", e => {
+            updateParticipantList;
           })
           .on("participant-joined", updateParticipantList)
           .on("participant-updated", updateParticipantList)
@@ -94,46 +87,65 @@
           .on("error", showEvent);
       }
 
-      async function createRoom() {
-        room = await createMtgRoom({
-          start_video_off: true,
-          start_audio_off: true
-        });
+      function checkForExistingRoom(url) {
+        // check and see if we have a pre-existing meeting room
+        let urlStartIdx = url.indexOf("?name=");
+        if (urlStartIdx > -1) {
+          // if we do - we'll extract the room name after the "?name="
+          let decodedRoomName = decodeURIComponent(url.slice(urlStartIdx + 6));
+          return decodedRoomName;
+        }
+        return false;
+      }
 
-        window.ownerLink = await createMtgLinkWithToken({
-          room_name: room.name,
-          is_owner: true,
-          start_audio_off: false,
-          start_video_off: false
-        });
-        updateRoomInfoDisplay();
+      async function createRoom() {
+        let room;
+        let roomNameExists = checkForExistingRoom(document.location.href);
+        if (roomNameExists) {
+          room = await fetchRoom(roomNameExists);
+          buttonEnable("join-meeting-student");
+        } else {
+          room = await createMtgRoom({
+            start_video_off: true,
+            start_audio_off: true,
+            max_participants: 10
+          });
+
+          buttonEnable("join-meeting-teacher", "join-meeting-student");
+          updateRoomInfoDisplay();
+          window.ownerLink = await createMtgLinkWithToken({
+            room_name: room.name,
+            is_owner: true,
+            start_audio_off: false,
+            start_video_off: false
+          });
+        }
       }
 
       async function createFrameAndRoom() {
         await createRoom();
         await createFrame();
         buttonDisable("create-room-and-frame");
-        buttonEnable(
-          "join-meeting-owner",
-          "join-meeting-regular",
-          "raise-hand-btn",
-          "leave-meeting"
-        );
       }
 
       function raiseHand() {
         let currentUserId = callFrame.participants().local.session_id;
-        callFrame.updateParticipant(currentUserId, { setVideo: true });
-        console.log(callFrame.participants());
-        callFrame.sendAppMessage({
-          sessionId: currentUserId
+        callFrame.updateParticipant(currentUserId, {
+          setAudio: true,
+          setVideo: true
         });
+        buttonDisable("raise-hand-btn");
+        buttonEnable("lower-hand-btn");
       }
 
-      function updateRaiseHandUI({ data: { sessionId } }) {
-        let raiseHandBtn = document.getElementById(`${sessionId}-hand`);
-        let newHtml = raiseHandBtn.innerHTML === "" ? "✋" : "";
-        raiseHandBtn.innerHTML = newHtml;
+      function lowerHand() {
+        let currentUserId = callFrame.participants().local.session_id;
+        callFrame.updateParticipant(currentUserId, {
+          setAudio: false,
+          setVideo: false
+        });
+        buttonEnable("raise-hand-btn");
+        buttonDisable("lower-hand-btn");
       }
     </script>
   </body>
