@@ -8,6 +8,5 @@ if (process.env.NODE_ENV !== "production") {
   const APIKEY = require("./keys.js");
   window.APIKEY = APIKEY;
 } else {
-  console.log(process.env["APIKEY"]);
-  console.log(process.env);
+  console.log(process.env.APIKEY);
 }
