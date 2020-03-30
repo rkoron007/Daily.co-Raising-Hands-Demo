@@ -8,6 +8,6 @@ if (process.env.NODE_ENV !== "production") {
   const SECRET_API_KEY = require("./keys.js");
   window.SECRET_API_KEY = SECRET_API_KEY;
 } else {
-  console.dir(process.env.SECRET_API_KEY);
+  console.dir(process.env);
   window.SECRET_API_KEY = process.env.SECRET_API_KEY;
 }
