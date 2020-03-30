@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "webpack --mode=development",
     "start": "nodemon server.js",
-    "postinstall": "webpack"
+    "postinstall": "webpack --mode=production"
   },
   "repository": {
     "type": "git",

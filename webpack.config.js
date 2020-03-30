@@ -1,3 +1,4 @@
+const webpack = require("webpack");
 const path = require("path");
 
 module.exports = {
@@ -21,6 +22,14 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env": {
+        SECRET_API_KEY: process.env.SECRET_API_KEY,
+        NODE_ENV: process.env.NODE_ENV
+      }
+    })
+  ],
   devtool: "source-map",
   resolve: {
     extensions: [".js", "*"]
