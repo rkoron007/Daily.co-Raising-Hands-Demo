@@ -36,8 +36,8 @@
         Lower Your Hand!
       </button>
     </div>
-
     <script>
+      // initially hide these buttons until we have a room setup
       function setupBtns() {
         buttonDisable(
           "join-meeting-teacher",
@@ -58,9 +58,13 @@
         for (let id in participants) {
           let participant = participants[id];
           let handRaised;
+          // the owner of this meeting is the teacher and can therefore
+          // not raise their own hand
           if (participant.owner) {
             handRaised = "";
           } else {
+            // otherwise a student will only have their hand raised if
+            // their camera is on
             handRaised = participant.video ? "✋" : "";
           }
           listHtml += `
@@ -71,24 +75,22 @@
         participantList.innerHTML = listHtml;
       }
 
+      // create our video frame - this will enable us to connect to a meeting
+      // later
       async function createFrame() {
-        window.callFrame = window.DailyIframe.createFrame();
+        callFrame = window.DailyIframe.createFrame();
 
         callFrame
-          .on("app-message", e => {
-            updateParticipantList;
-          })
-          .on("leave-meeting", e => {
-            updateParticipantList;
-          })
+          .on("left-meeting", emptyParticipantList)
+          .on("join-meeting", updateParticipantList)
           .on("participant-joined", updateParticipantList)
           .on("participant-updated", updateParticipantList)
           .on("participant-left", updateParticipantList)
           .on("error", showEvent);
       }
 
+      // check and see if we have a pre-existing meeting room in our url
       function checkForExistingRoom(url) {
-        // check and see if we have a pre-existing meeting room
         let urlStartIdx = url.indexOf("?name=");
         if (urlStartIdx > -1) {
           // if we do - we'll extract the room name after the "?name="
@@ -98,30 +100,42 @@
         return false;
       }
 
+      // this function will ensure we have a room object available
       async function createRoom() {
         let room;
         let roomNameExists = checkForExistingRoom(document.location.href);
+        // if we have a room we will fetch that room's information
         if (roomNameExists) {
           room = await fetchRoom(roomNameExists);
           buttonEnable("join-meeting-student");
         } else {
+          // with no room we need to create a new room
+          // we'll create this in owner_only_broadcast so that only the owner
+          // will have the ability to turn off and on their camera and audio
+          // (since they are the teacher)
           room = await createMtgRoom({
-            start_video_off: true,
-            start_audio_off: true,
-            max_participants: 10
+            owner_only_broadcast: true
           });
 
-          buttonEnable("join-meeting-teacher", "join-meeting-student");
-          updateRoomInfoDisplay();
+          // we then generate a link for the "owner" of this meeting to join
+          // (i.e in this case the teacher)
           window.ownerLink = await createMtgLinkWithToken({
             room_name: room.name,
             is_owner: true,
             start_audio_off: false,
             start_video_off: false
           });
+
+          // update our ui with our new room url link
+          updateRoomUrlDisplay();
+          // the user can then choose:
+          // A. join as the teacher (the owner of the meeting)
+          // B. join as a student
+          buttonEnable("join-meeting-teacher", "join-meeting-student");
         }
       }
 
+      // create our meeting room and prepare our call to connect
       async function createFrameAndRoom() {
         await createRoom();
         await createFrame();
@@ -129,7 +143,10 @@
       }
 
       function raiseHand() {
+        // find the id of the person raising their hand
         let currentUserId = callFrame.participants().local.session_id;
+        // raising the hand of a student will turn their camera and video on
+        // and this will also trigger the "participant-updated" event
         callFrame.updateParticipant(currentUserId, {
           setAudio: true,
           setVideo: true
@@ -140,6 +157,8 @@
 
       function lowerHand() {
         let currentUserId = callFrame.participants().local.session_id;
+        // lowering the hand of a student will turn their camera and video off
+        // this will also trigger the "participant-updated" event
         callFrame.updateParticipant(currentUserId, {
           setAudio: false,
           setVideo: false

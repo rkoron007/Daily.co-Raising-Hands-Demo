@@ -2,7 +2,9 @@ function showEvent(e) {
   console.log("video call event -->", e);
 }
 
-function updateRoomInfoDisplay() {
+// will create a link with the current room name and insert that link
+// into our HTML
+function updateRoomUrlDisplay() {
   let roomEl = document.getElementById("meeting-room-info");
 
   let roomLink =
@@ -14,23 +16,16 @@ function updateRoomInfoDisplay() {
       <div>
         <h4>Room Info</h4>
           <a href="${roomLink}" target="_blank">
-            <p>Open this link incognito mode</p>     
+            <p>Open this link in incognito mode to log in as a student</p>     
           </a>
-        <span id='expires-countdown' />
       </div>
     `;
-  if (!window.expiresUpdate) {
-    window.expiresUpdate = setInterval(() => {
-      let exp = room && room.config && room.config.exp;
-      if (exp) {
-        document.getElementById("expires-countdown").innerHTML = `
-     room expires in
-       ${Math.floor((new Date(exp * 1000) - Date.now()) / 1000)}
-     seconds
-   `;
-      }
-    }, 1000);
-  }
+}
+
+// we've left the meeting so we will empty the participant list
+function emptyParticipantList() {
+  const participantList = document.getElementById("participants-list");
+  participantList.innerHTML = "";
 }
 
 // ui button functions
@@ -52,6 +47,8 @@ function buttonDisable(...args) {
   });
 }
 
+// functions that will connect to the call as either a student or teacher and
+// handle showing/hiding buttons
 function joinCallTeacher() {
   callFrame.join({ url: ownerLink });
   buttonDisable("join-meeting-student", "join-meeting-teacher");
@@ -59,7 +56,7 @@ function joinCallTeacher() {
 }
 
 function joinCallStudent() {
-  callFrame.join({ url: room.url });
+  callFrame.join({ url: room.url, showLeaveButton: false });
   buttonDisable("join-meeting-student", "join-meeting-teacher");
   buttonEnable("raise-hand-btn", "leave-meeting");
 }

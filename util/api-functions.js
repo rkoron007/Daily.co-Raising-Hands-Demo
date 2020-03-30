@@ -29,6 +29,7 @@ async function makeFetchRequest(url) {
   });
 }
 
+// will return a room object with the specified name
 async function fetchRoom(name) {
   let response = await makeFetchRequest(
     `https://api.daily.co/v1/rooms/${name}`
@@ -69,24 +70,3 @@ async function createMtgLinkWithToken(properties) {
   let { token } = await handleResponseJSON(response);
   return `${room.url}?t=${token}`;
 }
-
-async function getAndDeleteRooms() {
-  let response = await makeFetchRequest("https://api.daily.co/v1/rooms");
-
-  let { data } = await handleResponseJSON(response);
-
-  data.forEach(room => {
-    console.log(room);
-    fetch(`https://api.daily.co/v1/rooms/${room.name}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        // imported from a file not checked into version control
-        authorization: `Bearer ${APIKEY}`
-      },
-      credentials: "same-origin"
-    });
-  });
-}
-
-// getAndDeleteRooms();
