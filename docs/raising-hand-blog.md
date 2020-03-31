@@ -37,7 +37,7 @@ Any student who joins the same video call will automatically have their audio
 and video turned off so as to not distract other students.
 
 When a student would like to ask a question they can click a button marked
-"Raise you hand" to turn their video and audio on. Then, once the questions has
+"Raise your hand" to turn their video and audio on. Then, once the questions has
 been answered, they can then "Lower their hand" to turn their audio and video
 off again.
 
@@ -253,7 +253,7 @@ async function createRoom() {
   if (roomNameExists) {
     room = await APIFunctions.fetchRoom(roomNameExists);
     // this function will enable the button to join as a student
-    // they CANT be a teacher since they are joining an existing meeting
+    // they CAN'T be a teacher since they are joining an existing meeting
     UIFunctions.buttonEnable("join-meeting-student");
   } else {
     room = await APIFunctions.createMtgRoom({
@@ -308,9 +308,9 @@ sure to include the Daily.co library so we can use it:
 
 Setting up a video call using the
 [`DailyIframe.createFrame`][daily-docs-create-frame] method is super easy! All
-we need to do is call `window.DailyIframe.createFrame` and pass in a url. For
-our demo we have two main urls for connecting to- one for the owner of the
-meeting (which includes the meeting token) and one for students.
+we need to do is call the `window.DailyIframe.createFrame` function and pass in
+an url. For our demo we have two main urls for connecting to- one for the owner
+of the meeting (which includes the meeting token) and one for students.
 
 We'll handle this by first creating our video connection (which we will call
 `callFrame` from now on) then allowing the user to choose how they would like to
@@ -379,10 +379,10 @@ move on to getting our "hand raise" ui setup.
 ### Raising A User's Hand
 
 In this context we've established that only the teacher is allowed to control
-their audio and video settings. In order to get the teacher's attention a
-student must being able to turn their own audio and video. So "raising your
-hand" virtually can be translated as a student being able to turn on tehir audio
-and video when they have a question.
+their audio and video settings. In order to get the teacher's attention, a
+student must be able to turn their own audio and video. So "raising your hand"
+virtually can be translated as a student being able to turn on their audio and
+video when they have a question.
 
 Let's take a look at how we went about building that. We first started off by
 creating a button for a user to click:
@@ -438,7 +438,7 @@ function lowerHand() {
 }
 ```
 
-Nice! We now have a was for users to "raise their hands" virtually. To finish
+Nice! We now have a way for users to "raise their hands" virtually. To finish
 things off we'll create a list of call participants with an indicator if their
 hand is raised or not.
 
