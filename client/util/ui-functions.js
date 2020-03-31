@@ -56,8 +56,7 @@ function joinCallTeacher() {
 }
 
 function joinCallStudent() {
-  console.log("hello");
-  callFrame.join({ url: room.url, showLeaveButton: false });
+  callFrame.join({ url: room.url });
   buttonDisable("join-meeting-student", "join-meeting-teacher");
   buttonEnable("raise-hand-btn", "leave-meeting");
 }

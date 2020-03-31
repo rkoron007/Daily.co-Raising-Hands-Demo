@@ -16,6 +16,15 @@ async function makePostRequest(url, properties = {}) {
   });
 }
 
+// checks response status for errors, and returns response JSON
+async function handleResponseJSON(response) {
+  if (response.status >= 201) {
+    console.log(response.statusText);
+    throw new Error("Bad response from server");
+  }
+  return response.json();
+}
+
 // function for creating a fetch request
 async function makeFetchRequest(url) {
   return fetch(url, {
@@ -37,15 +46,6 @@ async function fetchRoom(name) {
 
   room = await handleResponseJSON(response);
   return room;
-}
-
-// checks response status for errors, and returns response JSON
-async function handleResponseJSON(response) {
-  if (response.status >= 201) {
-    console.log(response.statusText);
-    throw new Error("Bad response from server");
-  }
-  return response.json();
 }
 
 // will return a room object with a url for joining that room
