@@ -412,7 +412,7 @@ method with a specified user's `session_id`:
 
 ```js
 function raiseHand() {
-  // find the session_id of the the current user
+  // find the session_id of the current user
   let currentUserId = callFrame.participants().local.session_id;
   // raising the hand of a student will turn their camera and video on
   // so we will update the current user to turn on their camera and audio

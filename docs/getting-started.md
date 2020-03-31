@@ -1,7 +1,7 @@
 # Getting started
 
 Here is a quick guide on how to get started making video calls in the browser
-using the the `Daily.co` API.
+using the `Daily.co` API.
 
 ## One-click, no-download video calls
 
@@ -45,7 +45,7 @@ allow your to create a video call:
 
 The above code displays the call in the lower right area of the page. But you
 can customize everything about the call. For example, below is the code required
-to turn create a full-page video call. [Demo it live here][big-demo].
+to create a full-page video call. [Demo it live here][big-demo].
 
 ```html
 <script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
