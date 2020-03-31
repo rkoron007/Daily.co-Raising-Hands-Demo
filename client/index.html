@@ -37,9 +37,9 @@
       </li>
       <li>
         <h4>
-          3. Once the meeting have been joined open an incognito window with the
-          provided link and join the same meeting as a student. Try raising and
-          lowering your hand!
+          3. Once the meeting has been joined try opening an incognito window
+          with the provided link to join the same meeting as a student. Try
+          raising and lowering your hand!
         </h4>
       </li>
     </ul>
@@ -184,7 +184,7 @@
           } else {
             // otherwise a student will only have their hand raised if
             // their camera is on
-            handRaised = participant.video ? "✋" : "";
+            handRaised = participant.video && participant.audio ? "✋" : "";
           }
           listHtml += `
           <li>

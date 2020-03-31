@@ -1,8 +1,8 @@
+// created a simple express server for hosting on Heroku
 const express = require("express");
 const app = express();
 const path = require("path");
 
-// // for routing to the index.html
 app.use(express.static(path.resolve(__dirname + "/client")));
 
 app.get("/", (req, res) => {
